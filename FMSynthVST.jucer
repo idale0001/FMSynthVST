@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="zWeXZH" name="FMSynthVST" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
-              pluginFormats="buildVST3" pluginCharacteristicsValue="pluginIsSynth"
+              pluginFormats="buildVST3" pluginCharacteristicsValue="pluginIsMidiEffectPlugin,pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
               pluginManufacturer="Dale and Wheeler">
   <MAINGROUP id="Dyo3op" name="FMSynthVST">
     <GROUP id="{E32CA26F-AE6C-D944-05B5-8A8FE76B212B}" name="Source">

@@ -16,10 +16,12 @@
 class FmsynthVstAudioProcessor  : public juce::AudioProcessor
 {
 public:
+    
+
     //==============================================================================
     FmsynthVstAudioProcessor();
     ~FmsynthVstAudioProcessor() override;
-
+    float noteOnVel;
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;

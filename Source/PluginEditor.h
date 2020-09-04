@@ -14,9 +14,11 @@
 //==============================================================================
 /**
 */
-class FmsynthVstAudioProcessorEditor  : public juce::AudioProcessorEditor
+class FmsynthVstAudioProcessorEditor  : public juce::AudioProcessorEditor, 
+                                        private juce::Slider::Listener
 {
 public:
+
     FmsynthVstAudioProcessorEditor (FmsynthVstAudioProcessor&);
     ~FmsynthVstAudioProcessorEditor() override;
 
@@ -25,11 +27,12 @@ public:
     void resized() override;
 
 private:
+    void sliderValueChanged(juce::Slider* slider) override;
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     FmsynthVstAudioProcessor& audioProcessor;
 
-    juce::Slider midiVolume; // [1]
+    juce::Slider midiVolume;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FmsynthVstAudioProcessorEditor)
 };

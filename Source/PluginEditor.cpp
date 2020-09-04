@@ -24,9 +24,11 @@ FmsynthVstAudioProcessorEditor::FmsynthVstAudioProcessorEditor (FmsynthVstAudioP
     midiVolume.setTextValueSuffix(" Volume");
     midiVolume.setValue(1.0);
 
+    //add the listener
+    midiVolume.addListener(this);
+
     //makes slider visible
     addAndMakeVisible(&midiVolume);
-
 }
 
 FmsynthVstAudioProcessorEditor::~FmsynthVstAudioProcessorEditor()
@@ -52,4 +54,9 @@ void FmsynthVstAudioProcessorEditor::resized()
 {
     // sets the position and size of the slider with arguments (x, y, width, height)
     midiVolume.setBounds(40, 30, 20, getHeight() - 60);
+}
+
+void FmsynthVstAudioProcessorEditor::sliderValueChanged(juce::Slider* slider)
+{
+    audioProcessor.noteOnVel = midiVolume.getValue();
 }
