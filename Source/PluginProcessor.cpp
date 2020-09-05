@@ -22,6 +22,14 @@ FmsynthVstAudioProcessor::FmsynthVstAudioProcessor()
                        )
 #endif
 {
+    mySynth.clearVoices();
+
+    for (int i = 0; i < 5; i++) {
+        mySynth.addVoice(new SynthVoice());
+    }
+
+    mySynth.clearSounds();
+    mySynth.addSound(new SynthSound());
 }
 
 FmsynthVstAudioProcessor::~FmsynthVstAudioProcessor()
@@ -93,8 +101,9 @@ void FmsynthVstAudioProcessor::changeProgramName (int index, const juce::String&
 //==============================================================================
 void FmsynthVstAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+    ignoreUnused(samplesPerBlock);
+    lastSampleRate = sampleRate;
+    mySynth.setCurrentPlaybackSampleRate(lastSampleRate);
 }
 
 void FmsynthVstAudioProcessor::releaseResources()
@@ -131,31 +140,7 @@ void FmsynthVstAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
 {
     buffer.clear();
 
-    juce::MidiBuffer processedMidi;
-    int time;
-    juce::MidiMessage m;
-
-    for (juce::MidiBuffer::Iterator i(midiMessages); i.getNextEvent(m, time);)
-    {
-        if (m.isNoteOn())
-        {
-            juce::uint8 newVel = (juce::uint8)noteOnVel;
-            m = juce::MidiMessage::noteOn(m.getChannel(), m.getNoteNumber(), newVel);
-        }
-        else if (m.isNoteOff())
-        {
-        }
-        else if (m.isAftertouch())
-        {
-        }
-        else if (m.isPitchWheel())
-        {
-        }
-
-        processedMidi.addEvent(m, time);
-    }
-
-    midiMessages.swapWith(processedMidi);
+    mySynth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
 }
 
 //==============================================================================
