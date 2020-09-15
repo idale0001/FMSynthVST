@@ -24,9 +24,9 @@ FmsynthVstAudioProcessor::FmsynthVstAudioProcessor()
 {
     mySynth.clearVoices();
 
-    for (int i = 0; i < 5; i++) {
-        mySynth.addVoice(new SynthVoice());
-    }
+    //additive synthesis
+    mySynth.addVoice(new SynthVoice());
+    
 
     mySynth.clearSounds();
     mySynth.addSound(new SynthSound());
@@ -139,7 +139,6 @@ bool FmsynthVstAudioProcessor::isBusesLayoutSupported (const BusesLayout& layout
 void FmsynthVstAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     buffer.clear();
-
     mySynth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
 }
 
