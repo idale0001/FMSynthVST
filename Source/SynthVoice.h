@@ -31,15 +31,19 @@ public:
 
     void renderNextBlock(AudioBuffer<float>& outputBuffer, int startSample, int numSamples);
 
-    void setADSRinSamples(double att, double dec, double susVol, double rel);
-
     double getAttackVolume() { return attackVolume; }
+    
+    void setADSR(int att, int dec, double susVol, int rel);
 
 private:
     double attackVolume;
     double frequency;
     double currentSampleRate, currentAngle, angleDelta;
     bool isReleasing;
-    int attack, decay, release, samplesSincePressed;
+    int samplesSincePressed;
+    int attack, decay, release;
     double sustainVolume;
+
+    double waveCalc(double currentAngle, int samplesSincePressed);
+
 };

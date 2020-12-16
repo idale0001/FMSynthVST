@@ -9,7 +9,6 @@
 */
 
 #include "SynthVoice.h"
-#include "FMCalculations.h"
 
 
 bool SynthVoice::canPlaySound(SynthesiserSound* sound) {
@@ -18,7 +17,7 @@ bool SynthVoice::canPlaySound(SynthesiserSound* sound) {
     
 void SynthVoice::startNote(int midiNoteNumber, float velocity, SynthesiserSound* sound, int currPitchWheelPosition) {
     currentAngle = 0.0;
-    attackVolume = velocity * .2 ;
+    attackVolume = velocity * .15;
     samplesSincePressed = 0;
     frequency = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber);
     double cyclesPerSample = frequency / getSampleRate();
@@ -43,30 +42,10 @@ void SynthVoice::controllerMoved(int collerNumber, int newControllerValue) {
 }
 
 
-//sets duration for attack sustain and release as well as the volume for the sustain
-void SynthVoice::setADSRinSamples(double att, double dec, double susVol, double rel) {
-    attack = att;
-    decay = dec;
-    sustainVolume = susVol;
-    release = rel;
-}
-
 void SynthVoice::renderNextBlock(AudioBuffer<float>& outputBuffer, int startSample, int numSamples) {
     if (angleDelta != 0) {
-        
-        setADSRinSamples(getSampleRate() * .01, getSampleRate() * .1, attackVolume * .1, getSampleRate() * .020);
-        
         for (int sample = 0; sample < numSamples; sample++){ 
-            double currSample = 0;
-            if (samplesSincePressed < attack) {
-                currSample = std::sin(currentAngle) * (attackVolume + sustainVolume) * (samplesSincePressed / (attack));
-            }
-            else if (samplesSincePressed <= decay) {
-                currSample = std::sin(currentAngle) * (attackVolume * ((decay + attack  - samplesSincePressed) / (attack)) + sustainVolume);
-            }
-            else {
-                currSample = std::sin(currentAngle) * sustainVolume;
-            }
+            double currSample = waveCalc(currentAngle, samplesSincePressed);
             samplesSincePressed++;
             currentAngle += angleDelta;
             for (int channel = 0; channel < outputBuffer.getNumChannels(); channel++) {
@@ -75,4 +54,23 @@ void SynthVoice::renderNextBlock(AudioBuffer<float>& outputBuffer, int startSamp
             
         }
     }
+}
+
+double SynthVoice::waveCalc(double currentAngle, int samplesSincePressed) {
+    if (samplesSincePressed < attack) {
+        return sin(currentAngle) * attackVolume * (samplesSincePressed * 1.0 / attack);
+    }
+    else if (samplesSincePressed <= decay) {
+        return sin(currentAngle) * ((attackVolume - sustainVolume) * (1 - (samplesSincePressed - attack) * 1.0 / (decay - attack)) + sustainVolume);
+    }
+    else {
+        return sin(currentAngle) * sustainVolume;
+    }
+}
+
+void SynthVoice::setADSR(int att, int dec, double susVol, int rel) {
+    attack = att;
+    decay = dec + attack;
+    sustainVolume = susVol;
+    release = rel + decay;
 }

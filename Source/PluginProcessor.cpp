@@ -23,8 +23,6 @@ FmsynthVstAudioProcessor::FmsynthVstAudioProcessor()
 #endif
 {
     mySynth.clearVoices();
-
-    //additive synthesis
     mySynth.addVoice(new SynthVoice());
     
 
@@ -103,7 +101,10 @@ void FmsynthVstAudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
 {
     ignoreUnused(samplesPerBlock);
     lastSampleRate = sampleRate;
+    SynthVoice* synthVoice = dynamic_cast<SynthVoice*>(mySynth.getVoice(0));
+    synthVoice->setADSR(44, 440, synthVoice->getAttackVolume() / 10, 0);
     mySynth.setCurrentPlaybackSampleRate(lastSampleRate);
+    
 }
 
 void FmsynthVstAudioProcessor::releaseResources()
